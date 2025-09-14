@@ -23,7 +23,7 @@ StaticLibrary {
         Depends { name: "SourceMap" }
         Depends { name: "cpp" }
         cpp.cxxLanguageVersion: "c++20"
-        cpp.includePaths: [ "./" ]
+        cpp.includePaths: [ exportingProduct.sourceDirectory ]
     }
 
     files: [
@@ -113,7 +113,6 @@ StaticLibrary {
         files: [
             ".buildbot.yml",
             ".gitmodules",
-            ".travis.yml",
             "CHANGES",
             "LICENSE",
             "NOTICE",

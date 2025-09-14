@@ -1,59 +1,86 @@
 profiles:
-# - name: "Linux Qt5.5.1 GCC 4.9"
-#   platform: Linux
-#   commands: std
-#   setup: ['qt551_gcc49']
+  # - name: "Linux Qt5.5.1 GCC 4.9"
+  #   platform: Linux
+  #   commands: std
+  #   setup: ['qt551_gcc49']
 
-- name: "Linux Qt5.5.1 GCC 4.9 QBS 1.7.1"
-  platform: Linux
-  commands: qbs
-  setup: ['qbs171_qt551_gcc49']
+  - name: "Linux Qt6.9.2 CLANG 21 QBS 3.0.3"
+    platform: Linux
+    commands: qbs
+    setup: ['qbs303_qt692_clang21']
 
-- name: "Linux Qt5.5.1 GCC 5.4"
-  platform: Linux
-  commands: std
-  setup: ['qt551_gcc54']
+  # - name: "Linux Qt5.5.1 GCC 5.4"
+  #   platform: Linux
+  #   commands: std
+  #   setup: ['qt551_gcc54']
 
-- name: "Linux Qt5.5.1 GCC 5.4 QBS 1.7.1"
-  platform: Linux
-  commands: std
-  setup: ['qbs171_qt551_gcc54']
+  # - name: "Linux Qt5.5.1 GCC 5.4 QBS 1.7.1"
+  #   platform: Linux
+  #   commands: std
+  #   setup: ['qbs171_qt551_gcc54']
 
-- name: "Windows Qt5.4 MinGW 4.9.1"
-  platform: Windows
-  commands: mingw
-  setup: ['qt54_mingw491']
+  # - name: "Windows Qt5.4 MinGW 4.9.1"
+  #   platform: Windows
+  #   commands: mingw
+  #   setup: ['qt54_mingw491']
 
-- name: "Windows Qt5.5.1 MingGW 4.9.2"
-  platform: Windows
-  commands: mingw
-  setup: ['qt551_mingw492']
+  # - name: "Windows Qt5.5.1 MingGW 4.9.2"
+  #   platform: Windows
+  #   commands: mingw
+  #   setup: ['qt551_mingw492']
 
-- name: "Windows Qt5.5 MSVC 2012 x32"
-  platform: Windows
-  commands: msvc
-  setup: ['qt55_msvc2012']
+  # - name: "Windows Qt5.5 MSVC 2012 x32"
+  #   platform: Windows
+  #   commands: msvc
+  #   setup: ['qt55_msvc2012']
 
-- name: "Windows Qt5.5 MSVC 2013 x64"
-  platform: Windows
-  commands: msvc
-  setup: ['qt55_msvc2013_x64']
+  # - name: "Windows Qt5.5 MSVC 2013 x64"
+  #   platform: Windows
+  #   commands: msvc
+  #   setup: ['qt55_msvc2013_x64']
 
 actions:
-- name: Prepare
-  std: 'qmake -r'
-  msvc: 'qmake -r'
-  mingw: 'qmake -r'
-  qbs: 'env;alias'
+  - name: Prepare
+    # std: 'qmake -r'
+    # msvc: 'qmake -r'
+    # mingw: 'qmake -r'
+    qbs:
+      commands: >
+        qbs resolve
+        --log-time
+        --build-directory ./tmp/twofold-build
+        --file Twofold-Qt.qbs
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        config:debug
+        config:release
 
-- name: Build
-  std: 'make'
-  msvc: 'nmake.exe'
-  mingw: 'mingw32-make.exe'
-  qbs: 'env;alias'
+  - name: Build and Test Debug
+    # std: 'make'
+    # msvc: 'nmake.exe'
+    # mingw: 'mingw32-make.exe'
+    qbs:
+      commands: >
+        qbs build
+        --keep-going
+        --log-time
+        --build-directory ./tmp/twofold-build
+        --file Twofold-Qt.qbs
+        --products "Twofold autotest-runner"
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        config:debug
 
-- name: Test
-  std: 'make check'
-  msvc: 'nmake check'
-  mingw: 'mingw32-make.exe check'
-  qbs: 'env;alias'
+
+  - name: Build and Test Release
+    # std: 'make check'
+    # msvc: 'nmake check'
+    # mingw: 'mingw32-make.exe check'
+    qbs:
+      commands: >
+        qbs build
+        --keep-going
+        --log-time
+        --build-directory ./tmp/twofold-build
+        --file Twofold-Qt.qbs
+        --products "Twofold autotest-runner"
+        modules.cpp.cxxStandardLibrary:libc++ modules.cpp.staticLibraries:c++,c++abi modules.cpp.linkerVariant:lld
+        config:release
